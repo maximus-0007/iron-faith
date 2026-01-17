@@ -1,36 +1,20 @@
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 
-const webStorage = typeof window !== 'undefined' ? {
-  getItem: (key: string) => {
-    const item = window.localStorage.getItem(key);
-    return Promise.resolve(item);
-  },
-  setItem: (key: string, value: string) => {
-    window.localStorage.setItem(key, value);
-    return Promise.resolve();
-  },
-  removeItem: (key: string) => {
-    window.localStorage.removeItem(key);
-    return Promise.resolve();
-  },
-} : AsyncStorage;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
-const storage = Platform.OS === 'web' ? webStorage : AsyncStorage;
+const isWeb = typeof window !== 'undefined';
 
-export const supabase = createClient(
-  process.env.EXPO_PUBLIC_SUPABASE_URL!,
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      storage,
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: Platform.OS === 'web',
-    },
-  });
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: isWeb ? window.localStorage : AsyncStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: false,
+  },
+});
 
 export interface DBMessage {
   id: string;

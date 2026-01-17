@@ -66,16 +66,13 @@ export async function sendChatMessage(
       throw new Error('Supabase configuration missing');
     }
 
-    let { data: { session } } = await supabase.auth.getSession();
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
 
-    if (!session?.access_token) {
-      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError || !refreshData.session?.access_token) {
-        const error: any = new Error('Your session has expired. Please sign in again.');
-        error.status = 401;
-        throw error;
-      }
-      session = refreshData.session;
+    if (!token) {
+      const error: any = new Error('No session token. Please sign in again.');
+      error.status = 401;
+      throw error;
     }
 
     const apiUrl = `${supabaseUrl}/functions/v1/bibleChat`;
@@ -83,7 +80,7 @@ export async function sendChatMessage(
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${session.access_token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

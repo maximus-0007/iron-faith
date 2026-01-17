@@ -48,59 +48,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function bootstrap() {
-      try {
-        // Helps you catch the #1 issue: env vars missing in TestFlight
-        // (If supabaseUrl/anonKey are undefined, your supabase client is doomed.)
-        // You can also log inside ./supabase for even more certainty.
-        const { data, error } = await supabase.auth.getSession();
-
-        if (!isMounted) return;
-
-        if (error) {
-          console.log('SUPABASE getSession ERROR:', {
-            message: error.message,
-            status: (error as any).status,
-            name: (error as any).name,
-          });
-        }
-
-        setSession(data.session);
-        setUser(data.session?.user ?? null);
-      } catch (e: any) {
-        console.log('BOOTSTRAP CATCH:', e?.message ?? e);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-
-    bootstrap();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      (async () => {
-        // Keep this minimal, avoid side effects here until auth is stable.
-        console.log('AUTH STATE CHANGE:', event);
-
-        setSession(nextSession);
-        setUser(nextSession?.user ?? null);
-
-        if (event === 'PASSWORD_RECOVERY') {
-          setIsRecoverySession(true);
-        }
-
-        // If you're doing RevenueCat or profile creation, do it here carefully.
-        // if (event === 'SIGNED_IN' && nextSession?.user) { ... }
-
-        setLoading(false);
-      })();
+    supabase.auth.getSession().then(({ data }) => {
+      console.log("BOOT SESSION", !!data.session);
+      setSession(data.session ?? null);
+      setUser(data.session?.user ?? null);
+      setLoading(false);
     });
 
-    return () => {
-      isMounted = false;
-      authListener.subscription.unsubscribe();
-    };
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("AUTH EVENT", event, "session?", !!session);
+      setSession(session ?? null);
+      setUser(session?.user ?? null);
+
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoverySession(true);
+      }
+    });
+
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   async function signIn(email: string, password: string): Promise<{ error?: string }> {
