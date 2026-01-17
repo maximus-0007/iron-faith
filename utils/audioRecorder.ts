@@ -1,6 +1,5 @@
 import { Audio } from 'expo-av';
 import { Platform } from 'react-native';
-import { supabase } from './supabase';
 
 export interface RecordingResult {
   uri: string;
@@ -146,7 +145,7 @@ export class AudioRecorder {
   }
 }
 
-export async function transcribeAudio(audioUri: string): Promise<string> {
+export async function transcribeAudio(audioUri: string, accessToken?: string | null): Promise<string> {
   try {
     const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
@@ -154,10 +153,10 @@ export async function transcribeAudio(audioUri: string): Promise<string> {
       throw new Error('Supabase configuration missing');
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
+    console.log('TRANSCRIBE USING TOKEN', accessToken?.slice(-8));
 
-    if (!session?.access_token) {
-      throw new Error('No active session. Please log in again.');
+    if (!accessToken) {
+      throw new Error('Not authenticated');
     }
 
     let audioBlob: Blob;
@@ -182,7 +181,7 @@ export async function transcribeAudio(audioUri: string): Promise<string> {
     const transcriptionResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${session.access_token}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: formData,
     });

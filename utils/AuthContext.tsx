@@ -6,6 +6,7 @@ import type { User, Session } from '@supabase/supabase-js';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  accessToken: string | null;
   loading: boolean;
   isRecoverySession: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
@@ -49,14 +50,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      console.log("BOOT SESSION", !!data.session);
+      console.log("BOOT SESSION", !!data.session, "TOKEN:", data.session?.access_token?.slice(-8));
       setSession(data.session ?? null);
       setUser(data.session?.user ?? null);
       setLoading(false);
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("AUTH EVENT", event, "session?", !!session);
+      console.log("AUTH EVENT", event, "session?", !!session, "TOKEN:", session?.access_token?.slice(-8));
       setSession(session ?? null);
       setUser(session?.user ?? null);
 
@@ -214,6 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       session,
+      accessToken: session?.access_token ?? null,
       loading,
       isRecoverySession,
       signIn,

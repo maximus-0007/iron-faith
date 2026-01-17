@@ -11,6 +11,7 @@ import { categorizeError } from '../utils/errorHandler';
 import { prefetchAndCacheVerses } from '../utils/bible';
 import { supabase } from '../utils/supabase';
 import { User } from '@supabase/supabase-js';
+import { useAuth } from '../utils/AuthContext';
 
 interface MessageHandlersParams {
   conversationIdRef: React.MutableRefObject<string | null>;
@@ -50,6 +51,8 @@ export function useMessageHandlers(params: MessageHandlersParams) {
     setRetryingMessageId,
     refreshConversations,
   } = params;
+
+  const { accessToken } = useAuth();
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!conversationIdRef.current) {
@@ -153,7 +156,8 @@ export function useMessageHandlers(params: MessageHandlersParams) {
           }
         },
         userProfile,
-        conversationIdRef.current || undefined
+        conversationIdRef.current || undefined,
+        accessToken
       );
 
       if (updateTimeout) {
@@ -183,6 +187,10 @@ export function useMessageHandlers(params: MessageHandlersParams) {
       if (appError.type === 'rate_limit') {
         setMessages(prev => prev.slice(0, -2));
         setIsPaywallVisible(true);
+      } else if (error.message === 'SESSION_EXPIRED') {
+        setMessages(prev => prev.slice(0, -2));
+        alert('Your session has expired. Please sign in again.');
+        await supabase.auth.signOut();
       } else {
         setMessages(prev =>
           prev.map((msg, index) =>
@@ -218,6 +226,7 @@ export function useMessageHandlers(params: MessageHandlersParams) {
     setIsFirstMessage,
     setIsPaywallVisible,
     refreshConversations,
+    accessToken,
   ]);
 
   const handleCancelAI = useCallback(() => {

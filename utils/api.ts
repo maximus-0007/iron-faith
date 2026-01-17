@@ -1,5 +1,4 @@
 import { Settings } from './settings';
-import { supabase } from './supabase';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -57,7 +56,8 @@ export async function sendChatMessage(
   settings?: Settings,
   onChunk?: (chunk: string) => void,
   intakeProfile?: IntakeProfile | null,
-  conversationId?: string
+  conversationId?: string,
+  accessToken?: string | null
 ): Promise<ChatResponse> {
   return retryWithBackoff(async () => {
     const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -66,11 +66,10 @@ export async function sendChatMessage(
       throw new Error('Supabase configuration missing');
     }
 
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
+    console.log('USING TOKEN', accessToken?.slice(-8));
 
-    if (!token) {
-      const error: any = new Error('No session token. Please sign in again.');
+    if (!accessToken) {
+      const error: any = new Error('Not authenticated');
       error.status = 401;
       throw error;
     }
@@ -80,7 +79,7 @@ export async function sendChatMessage(
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -107,8 +106,10 @@ export async function sendChatMessage(
 
       if (response.status === 429) {
         userMessage = 'You have reached your message limit. Please upgrade to continue.';
-      } else if (response.status === 401 || response.status === 403) {
-        userMessage = 'Your session has expired. Please sign in again.';
+      } else if (response.status === 401) {
+        userMessage = 'SESSION_EXPIRED';
+      } else if (response.status === 403) {
+        userMessage = 'You do not have permission to perform this action.';
       } else if (response.status >= 500) {
         userMessage = 'Our servers are experiencing issues. Please try again in a moment.';
       } else if (error.error === 'MESSAGE_LIMIT_REACHED') {

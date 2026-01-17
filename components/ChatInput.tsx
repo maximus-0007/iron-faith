@@ -21,6 +21,7 @@ import { AudioRecorder, transcribeAudio } from '../utils/audioRecorder';
 import { getUserUsage, UserUsage } from '../utils/messageLimit';
 import { haptics } from '../utils/haptics';
 import { useReducedMotion, animationConfig } from '../utils/accessibility';
+import { useAuth } from '../utils/AuthContext';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -55,6 +56,7 @@ export default function ChatInput({
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   const reduceMotion = useReducedMotion();
+  const { accessToken } = useAuth();
   const pulseScale = useSharedValue(1);
   const focusProgress = useSharedValue(0);
   const glowOpacity = useSharedValue(0);
@@ -275,7 +277,7 @@ export default function ChatInput({
       setIsTranscribing(true);
 
       try {
-        const transcribedText = await transcribeAudio(result.uri);
+        const transcribedText = await transcribeAudio(result.uri, accessToken);
 
         haptics.success();
 
