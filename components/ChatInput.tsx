@@ -198,9 +198,12 @@ export default function ChatInput({
       withTiming(0.85, { duration: 80, easing: Easing.out(Easing.ease) }),
       withSpring(1, { damping: 12, stiffness: 200 })
     );
-    onSend(message.trim());
+
+    const messageToSend = message.trim();
+    console.log('[ChatInput] Sending message:', messageToSend.substring(0, 50));
     setMessage('');
     setInputHeight(24);
+    onSend(messageToSend);
   };
 
   const formatRecordingDuration = (seconds: number): string => {

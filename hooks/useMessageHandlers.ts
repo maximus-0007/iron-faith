@@ -53,9 +53,18 @@ export function useMessageHandlers(params: MessageHandlersParams) {
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!conversationIdRef.current) {
-      console.error('No conversation initialized');
+      console.error('No conversation initialized', {
+        conversationId: conversationIdRef.current,
+        userId: user?.id
+      });
+      alert('Error: No conversation initialized. Please refresh the app.');
       return;
     }
+
+    console.log('Sending message', {
+      conversationId: conversationIdRef.current,
+      contentLength: content.length
+    });
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -64,7 +73,10 @@ export function useMessageHandlers(params: MessageHandlersParams) {
       timestamp: new Date().toISOString(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => {
+      console.log('Adding user message, prev length:', prev.length);
+      return [...prev, userMessage];
+    });
     setIsLoading(true);
 
     const aiMessageId = (Date.now() + 1).toString();

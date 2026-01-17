@@ -192,6 +192,7 @@ export default function ChatScreen() {
     }
 
     try {
+      console.log('[ChatScreen] Initializing chat for user:', user.id);
       userIdRef.current = user.id;
 
       await loadProfileFromDatabase(user.id);
@@ -209,13 +210,17 @@ export default function ChatScreen() {
       }
 
       const existingConversations = await getUserConversations(user.id);
+      console.log('[ChatScreen] Found conversations:', existingConversations.length);
       setConversations(existingConversations);
 
       if (existingConversations.length > 0) {
+        console.log('[ChatScreen] Loading existing conversation:', existingConversations[0].id);
         await conversationHandlers.loadConversation(existingConversations[0].id);
       } else {
+        console.log('[ChatScreen] Creating new conversation');
         const conversationId = await createConversation(user.id);
         conversationIdRef.current = conversationId;
+        console.log('[ChatScreen] Created conversation:', conversationId);
         await conversationHandlers.refreshConversations();
       }
 
@@ -291,6 +296,11 @@ export default function ChatScreen() {
   }, [setShowPhilosophyIntro, setShowSampleQuestions]);
 
   const handleSelectSampleQuestion = useCallback(async (question: string) => {
+    console.log('[ChatScreen] Sample question selected', {
+      question: question.substring(0, 50),
+      conversationId: conversationIdRef.current
+    });
+
     setShowSampleQuestions(false);
 
     if (user?.id) {
@@ -300,8 +310,17 @@ export default function ChatScreen() {
         .eq('user_id', user.id);
     }
 
+    if (!conversationIdRef.current) {
+      console.error('[ChatScreen] No conversation when selecting sample question, creating one');
+      if (user?.id) {
+        const conversationId = await createConversation(user.id);
+        conversationIdRef.current = conversationId;
+        await conversationHandlers.refreshConversations();
+      }
+    }
+
     await messageHandlers.handleSendMessage(question);
-  }, [user, setShowSampleQuestions, messageHandlers]);
+  }, [user, setShowSampleQuestions, messageHandlers, conversationIdRef, conversationHandlers]);
 
   const handleSkipOnboarding = useCallback(async () => {
     setShowPhilosophyIntro(false);
