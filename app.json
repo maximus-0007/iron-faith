@@ -2,7 +2,7 @@
   "expo": {
     "name": "Iron Faith",
     "slug": "iron-faith",
-    "version": "1.4.0",
+    "version": "1.8.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "ironfaith",
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ironfaith.app",
-      "buildNumber": "2",
+      "buildNumber": "6",
       "infoPlist": {
         "NSCameraUsageDescription": "Iron Faith uses your camera to capture images for sharing.",
         "NSPhotoLibraryUsageDescription": "Iron Faith accesses your photo library to select images.",

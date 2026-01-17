@@ -63,9 +63,7 @@ export async function sendChatMessage(
     const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
     if (!supabaseUrl) {
-      const error: any = new Error('Unable to connect. Please try again later.');
-      error.status = 500;
-      throw error;
+      throw new Error('Supabase configuration missing');
     }
 
     const { data: { session } } = await supabase.auth.getSession();

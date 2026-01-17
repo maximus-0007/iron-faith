@@ -2,7 +2,7 @@ import '@testing-library/jest-native/extend-expect';
 import 'react-native-gesture-handler/jestSetup';
 
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+process.env.EXPO_PUBLIC_SUPABASE_KEY = 'test-supabase-key';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   default: {

@@ -104,7 +104,7 @@ export function useMessageHandlers(params: MessageHandlersParams) {
       }));
 
       let accumulatedContent = '';
-      let updateTimeout: NodeJS.Timeout | null = null;
+      let updateTimeout: ReturnType<typeof setTimeout> | null = null;
       let pendingChunks = '';
 
       const flushUpdate = () => {

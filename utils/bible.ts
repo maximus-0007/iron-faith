@@ -207,8 +207,10 @@ const BOOK_ABBREVIATIONS: Record<string, string> = {
   'Rm': 'Romans',
   '1Cor': '1 Corinthians',
   '1Co': '1 Corinthians',
+  '1 Cor': '1 Corinthians',
   '2Cor': '2 Corinthians',
   '2Co': '2 Corinthians',
+  '2 Cor': '2 Corinthians',
   'Gal': 'Galatians',
   'Ga': 'Galatians',
   'Ephes': 'Ephesians',
@@ -332,7 +334,7 @@ const TRANSLATION_ID_MAP: Record<string, string> = {
 };
 
 export const SCRIPTURE_REFERENCE_REGEX =
-  /(?:(?:1|2|3)\s)?(?:[A-Z][a-z]+(?:\s[A-Z][a-z]+)*)\s\d+:\d+(?!-)/g;
+  /(?:(?:1|2|3)\s+)?(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+\d+:\d+(?:-\d+)?/g;
 
 function normalizeBookName(bookName: string): string {
   const trimmed = bookName.trim();
@@ -540,8 +542,8 @@ export async function clearRecentVerses(): Promise<void> {
 }
 
 export function isValidReference(reference: string): boolean {
-  const regex = /(?:(?:1|2|3)\s)?(?:[A-Z][a-z]+(?:\s[A-Z][a-z]+)*)\s\d+:\d+$/;
-  return regex.test(reference) && !reference.includes('-');
+  const regex = /(?:(?:1|2|3)\s)?(?:[A-Z][a-z]+(?:\s[A-Z][a-z]+)*)\s\d+:\d+(?:-\d+)?$/;
+  return regex.test(reference);
 }
 
 export function isSingleVerse(reference: string): boolean {

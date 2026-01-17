@@ -1,7 +1,7 @@
 {
   "name": "iron-faith",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
@@ -20,7 +20,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@supabase/supabase-js": "^2.58.0",
-    "expo": "^54.0.10",
+    "expo": "^54.0.31",
     "expo-auth-session": "^7.0.10",
     "expo-av": "^16.0.8",
     "expo-blur": "~15.0.7",
@@ -34,7 +34,7 @@
     "expo-image-picker": "^17.0.10",
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.8",
-    "expo-router": "~6.0.8",
+    "expo-router": "~6.0.21",
     "expo-sharing": "^14.0.8",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",

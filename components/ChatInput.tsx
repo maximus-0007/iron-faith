@@ -64,7 +64,7 @@ export default function ChatInput({
   const sendButtonOpacity = useSharedValue(0);
   const sendButtonScale = useSharedValue(0.8);
   const audioRecorderRef = useRef(new AudioRecorder());
-  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (userId) {

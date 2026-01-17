@@ -40,12 +40,13 @@ export default function SignUpScreen() {
     setError('');
 
     const result = await signUp(email, password);
+    if (result.error) {
+      setLoading(false);
+      setError(result.error);
+      return;
+    }
 
     setLoading(false);
-
-    if (result.error) {
-      setError(result.error);
-    }
   }
 
   function navigateToLogin() {

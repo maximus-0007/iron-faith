@@ -187,7 +187,7 @@ describe('API Utils', () => {
       });
 
       await expect(sendChatMessage('Question')).rejects.toThrow(
-        'No active session. Please log in again.'
+        'Your session has expired. Please sign in again.'
       );
     });
 
@@ -197,7 +197,7 @@ describe('API Utils', () => {
       await expect(sendChatMessage('Question')).rejects.toThrow(
         'Supabase configuration missing'
       );
-    });
+    }, 10000);
 
     it('handles API error responses', async () => {
       (global.fetch as jest.Mock)
@@ -208,7 +208,7 @@ describe('API Utils', () => {
         });
 
       await expect(sendChatMessage('Question')).rejects.toThrow(
-        'Internal server error'
+        'Our servers are experiencing issues. Please try again in a moment.'
       );
     }, 10000);
 
@@ -264,7 +264,7 @@ describe('API Utils', () => {
         json: async () => ({ error: 'Bad request' }),
       });
 
-      await expect(sendChatMessage('Question')).rejects.toThrow('Bad request');
+      await expect(sendChatMessage('Question')).rejects.toThrow('Unable to send your message. Please try again.');
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 

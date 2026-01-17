@@ -161,7 +161,7 @@ describe('AuthContext', () => {
     it('returns error on failed sign in', async () => {
       (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValueOnce({
         data: null,
-        error: { message: 'Invalid credentials' },
+        error: { message: 'Invalid login credentials' },
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -175,7 +175,7 @@ describe('AuthContext', () => {
         signInResult = await result.current.signIn('test@example.com', 'wrongpassword');
       });
 
-      expect(signInResult).toEqual({ error: 'Invalid credentials' });
+      expect(signInResult).toEqual({ error: 'Incorrect email or password.' });
     });
 
     it('handles unexpected errors', async () => {
@@ -194,7 +194,7 @@ describe('AuthContext', () => {
         signInResult = await result.current.signIn('test@example.com', 'password123');
       });
 
-      expect(signInResult).toEqual({ error: 'An unexpected error occurred' });
+      expect(signInResult).toEqual({ error: 'Network/app error. Try again.' });
     });
   });
 
@@ -229,7 +229,7 @@ describe('AuthContext', () => {
     it('returns error when email already exists', async () => {
       (supabase.auth.signUp as jest.Mock).mockResolvedValueOnce({
         data: null,
-        error: { message: 'User already exists' },
+        error: { message: 'User already registered' },
       });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -243,7 +243,7 @@ describe('AuthContext', () => {
         signUpResult = await result.current.signUp('existing@example.com', 'password123');
       });
 
-      expect(signUpResult).toEqual({ error: 'User already exists' });
+      expect(signUpResult).toEqual({ error: 'An account with this email already exists. Please sign in.' });
     });
 
     it('handles unexpected errors', async () => {
@@ -262,7 +262,7 @@ describe('AuthContext', () => {
         signUpResult = await result.current.signUp('new@example.com', 'password123');
       });
 
-      expect(signUpResult).toEqual({ error: 'An unexpected error occurred' });
+      expect(signUpResult).toEqual({ error: 'Network/app error. Try again.' });
     });
   });
 
@@ -328,7 +328,7 @@ describe('AuthContext', () => {
         resetResult = await result.current.requestPasswordReset('nonexistent@example.com');
       });
 
-      expect(resetResult).toEqual({ error: 'User not found' });
+      expect(resetResult).toEqual({ error: 'Authentication failed. Please try again.' });
     });
 
     it('handles unexpected errors', async () => {
@@ -347,7 +347,7 @@ describe('AuthContext', () => {
         resetResult = await result.current.requestPasswordReset('test@example.com');
       });
 
-      expect(resetResult).toEqual({ error: 'An unexpected error occurred' });
+      expect(resetResult).toEqual({ error: 'Network/app error. Try again.' });
     });
   });
 
@@ -392,7 +392,7 @@ describe('AuthContext', () => {
         resetResult = await result.current.resetPassword('weak');
       });
 
-      expect(resetResult).toEqual({ error: 'Password too weak' });
+      expect(resetResult).toEqual({ error: 'Authentication failed. Please try again.' });
     });
 
     it('handles unexpected errors', async () => {
@@ -411,7 +411,7 @@ describe('AuthContext', () => {
         resetResult = await result.current.resetPassword('newpassword123');
       });
 
-      expect(resetResult).toEqual({ error: 'An unexpected error occurred' });
+      expect(resetResult).toEqual({ error: 'Network/app error. Try again.' });
     });
   });
 

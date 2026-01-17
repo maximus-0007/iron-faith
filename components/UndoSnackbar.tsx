@@ -22,7 +22,7 @@ export default function UndoSnackbar({
 }: UndoSnackbarProps) {
   const { theme } = useSettings();
   const translateY = useRef(new RNAnimated.Value(100)).current;
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (visible) {
