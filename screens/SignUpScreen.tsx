@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { useRouter } from 'expo-router';
 import { useAuth } from '../utils/AuthContext';
 import { useSettings } from '../utils/settings';
+import { isValidEmail } from '../utils/validation';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Eye, EyeOff } from 'lucide-react-native';
@@ -23,6 +24,12 @@ export default function SignUpScreen() {
   async function handleSignUp() {
     if (!email || !password || !confirmPassword) {
       setError('Please fill in all fields');
+      return;
+    }
+
+    const emailValidation = isValidEmail(email);
+    if (!emailValidation.isValid) {
+      setError(emailValidation.error || 'Invalid email address');
       return;
     }
 

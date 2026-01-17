@@ -62,6 +62,16 @@ export function isValidEmail(email: string | undefined | null): ValidationResult
     };
   }
 
+  const domain = email.split('@')[1]?.toLowerCase();
+  const invalidDomains = ['example.com', 'test.com', 'localhost'];
+
+  if (domain && invalidDomains.includes(domain)) {
+    return {
+      isValid: false,
+      error: 'Please use a real email address (e.g., yourname@gmail.com)',
+    };
+  }
+
   return { isValid: true };
 }
 

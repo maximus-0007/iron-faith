@@ -31,7 +31,8 @@ function friendlyAuthError(message: string) {
   if (msg.includes('too many requests')) return 'Too many attempts. Wait a minute and try again.';
   if (msg.includes('user already registered')) return 'An account with this email already exists. Please sign in.';
   if (msg.includes('password should be')) return 'Password must be at least 6 characters.';
-  if (msg.includes('invalid email')) return 'Please enter a valid email address.';
+  if (msg.includes('invalid email') || msg.includes('email_address_invalid') || msg.includes('email address')) return 'Please enter a valid email address (e.g., yourname@gmail.com).';
+  if (msg.includes('fetch')) return 'Network error. Please check your internet connection and try again.';
 
   return 'Authentication failed. Please try again.';
 }
